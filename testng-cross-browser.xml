@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="QA Tasks (cross-browser)">
+
+    <!-- Google blocks automated Chrome from some networks with a reCAPTCHA page,
+         so the Google search test only runs in Firefox -->
+    <test name="Chrome">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.tests.LoginTest"/>
+        </classes>
+    </test>
+
+    <test name="Firefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.qa.tests.GoogleSearchTest"/>
+            <class name="com.qa.tests.LoginTest"/>
+        </classes>
+    </test>
+
+</suite>

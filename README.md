@@ -12,7 +12,7 @@ Selenium 4 + TestNG UI test automation with Allure reporting, using the Page Obj
 - Invalid password: a valid email with a wrong password shows the "incorrect username or password" error.
 - Valid login: a valid email and password take the user past the login page.
 
-Every test runs once per browser (Chrome and Firefox) from `testng.xml`.
+The browser is chosen when you run the tests (see [Cross-browser execution](#cross-browser-execution)). The cross-browser suite runs the login tests in Chrome and Firefox, and the Google search test in Firefox only, because Google often blocks automated Chrome with a reCAPTCHA page.
 
 ## Tech stack
 
@@ -30,7 +30,8 @@ Every test runs once per browser (Chrome and Firefox) from `testng.xml`.
 ```
 QA Tasks
 ├── pom.xml                      Maven build: dependencies, surefire + Allure config
-├── testng.xml                   Suite: Chrome and Firefox <test> blocks
+├── testng.xml                   Default suite: browser comes from -Dbrowser (default firefox)
+├── testng-cross-browser.xml     Suite that runs Chrome and Firefox in one go
 └── src
     ├── main/java/com/qa
     │   ├── config/ConfigReader.java     Reads config.properties from the classpath
@@ -39,6 +40,7 @@ QA Tasks
     │       └── LoginPage.java
     └── test
         ├── java/com/qa
+        │   ├── factory/DriverFactory.java      Builds the WebDriver for a browser name
         │   ├── listeners/AllureListener.java   Attaches a screenshot on test failure
         │   └── tests/
         │       ├── BaseTest.java               Starts/quits the browser per test
@@ -70,13 +72,30 @@ QA Tasks
 
 ## Run the tests
 
-All tests, in both browsers:
-
 ```bash
-mvn clean test
+mvn clean test                                       # Firefox (the default)
+mvn clean test -Dbrowser=chrome                      # Chrome
+mvn clean test -Dbrowser=firefox                     # Firefox
+mvn clean test -Dsuite=testng-cross-browser.xml      # Chrome and Firefox in one run
 ```
 
-One browser only: open `testng.xml` and remove (or comment out) the `<test>` block for the browser you don't want. The `browser` parameter accepts `chrome` or `firefox`.
+## Cross-browser execution
+
+**How the browser is selected.** `BaseTest.startBrowser()` runs before every test and decides the browser name in this order:
+
+1. the `-Dbrowser=...` system property from the command line, if given
+2. the `browser` parameter in the TestNG suite file (this is what `testng-cross-browser.xml` uses)
+3. `firefox`, as the default
+
+It then calls `DriverFactory.create(name)` and gets back a ready `WebDriver`. The tests only use the `WebDriver` interface, so they never change when the browser changes.
+
+**Design pattern: Simple Factory.** `DriverFactory` is the single place that knows how to build each browser. It keeps a map from a name (`"chrome"`) to a way of creating the driver (`ChromeDriver::new`).
+
+- **Maintainability:** browser creation lives in one class. Test and page code never mention `ChromeDriver` or `FirefoxDriver`.
+- **Scalability:** supporting a new browser is one new line in the map, for example `"edge", EdgeDriver::new`. No test, page or `BaseTest` changes.
+- **Reusability:** anything that needs a driver calls `DriverFactory.create(...)`. An unknown name fails fast with a message listing the supported browsers.
+
+**Adding a browser (example: Edge).** In `DriverFactory`, import `org.openqa.selenium.edge.EdgeDriver` and add `"edge", EdgeDriver::new` to `BROWSERS`. Then run `mvn clean test -Dbrowser=edge`.
 
 ## Allure report
 

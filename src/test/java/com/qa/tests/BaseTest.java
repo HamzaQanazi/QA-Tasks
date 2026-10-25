@@ -1,9 +1,8 @@
 package com.qa.tests;
 
+import com.qa.factory.DriverFactory;
 import com.qa.listeners.AllureListener;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
@@ -22,11 +21,8 @@ public class BaseTest {
     @BeforeMethod
     @Parameters("browser")
     public void startBrowser(@Optional("firefox") String browser) {
-        if ("chrome".equalsIgnoreCase(browser)) {
-            driver = new ChromeDriver();
-        } else {
-            driver = new FirefoxDriver();
-        }
+        // -Dbrowser=chrome on the command line wins over the testng.xml parameter
+        driver = DriverFactory.create(System.getProperty("browser", browser));
         driver.manage().window().maximize();
     }
 

@@ -86,7 +86,6 @@ public class LoginTest extends BaseTest {
         rainbow.enterPassword(ConfigReader.get("rainbow.password"));
         rainbow.clickLogin();
 
-        System.out.println("URL after login: " + driver.getCurrentUrl());
         Assert.assertTrue(
             rainbow.isLoginSuccessful(),
             "Login failed: still on the login page");

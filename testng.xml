@@ -2,16 +2,9 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="QA Tasks">
 
-    <test name="Chrome">
-        <parameter name="browser" value="chrome"/>
-        <classes>
-            <class name="com.qa.tests.GoogleSearchTest"/>
-            <class name="com.qa.tests.LoginTest"/>
-        </classes>
-    </test>
-
-    <test name="Firefox">
-        <parameter name="browser" value="firefox"/>
+    <!-- No browser parameter here: the browser comes from -Dbrowser=chrome|firefox
+         and defaults to firefox (see BaseTest). Use testng-cross-browser.xml to run both. -->
+    <test name="QA Tasks">
         <classes>
             <class name="com.qa.tests.GoogleSearchTest"/>
             <class name="com.qa.tests.LoginTest"/>

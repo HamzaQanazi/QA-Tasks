@@ -25,7 +25,7 @@ public class GoogleSearchTest extends BaseTest {
     @Story("Search by keyword")
     @Severity(SeverityLevel.NORMAL)
     @Description("Open Google, search for 'twitch' and verify the results URL contains q=twitch")
-    public void testGoogleSearchFirefox() {
+    public void testGoogleSearch() {
 
         GooglePage google = new GooglePage(driver);
 
@@ -49,8 +49,6 @@ public class GoogleSearchTest extends BaseTest {
             google.getCurrentUrl().contains("q=twitch"),
             "Search failed!"
         );
-
-        System.out.println("TEST PASSED: Twitch search successful!");
     }
 
 }

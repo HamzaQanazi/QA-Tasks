@@ -28,6 +28,7 @@ public class AllureListener implements ITestListener {
                 AttachmentOptions.withFileExtension(".png"));
         } catch (RuntimeException e) {
             // browser already gone: skip the screenshot, never mask the real failure
+            System.err.println("Could not take failure screenshot: " + e.getMessage());
         }
     }
 }
